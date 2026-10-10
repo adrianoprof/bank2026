@@ -6,6 +6,8 @@ import 'package:sqflite/sqflite.dart';
 
 import '../models/transferencia.dart';
 
+import '../models/contato.dart';
+
 import 'dart:io';
 
 Future<Database> getDatabase() async {
@@ -19,21 +21,58 @@ Future<Database> getDatabase() async {
         'valor REAL, '
         'numero_conta INTEGER)',
       );
+
+      await db.execute('''
+        create table contatos(
+          id integer primary key autoincrement,
+          nome text,
+          numero_conta integer
+        )
+      ''');
     },
-    version: 1,
+    version: 2,
   );
 }
 
-// Função assíncrona que salva uma transferência no banco de dados.
-// Retorna um Future<int> com o id da linha inserida.
+Future<int> salvarContato(Contato contato) async {
+  // obtém a instância do banco aberta
+  final Database db = await getDatabase();
+
+  // insere o contato na tabela 'contatos'
+  // o método 'toMap()' vem da classe Contato e converte o objeto em um formato aceito pelo banco.
+  // o retorno é o id do registro inserido.
+  return db.insert('contatos', contato.toMap());
+}
+
+Future<List<Contato>> buscarContatos() async {
+  // abre o banco de dados
+  final Database db = await getDatabase();
+
+  // executa uma consulta SQL simplificada (SELECT * FROM contatos)
+  // o resultado vem como uma lista de Map<String, dynamic>,
+  // onde cada mapa representa uma linha (registro).
+  final List<Map<String, dynamic>> resultado = await db.query('contatos');
+  // converte a lista de Map em uma lista de objetos Contato,
+  // usando a função 'List.generate' do Dart.
+  return List.generate(resultado.length, (i) {
+    return Contato(
+      id: resultado[i]['id'],
+      nome: resultado[i]['nome'],
+      numeroConta: resultado[i]['numero_conta'],
+    );
+  });
+}
+
 Future<int> salvarTransferencia(Transferencia transferencia) async {
   final Database db = await getDatabase();
+
   final Map<String, dynamic> transferenciaMap = {
     // Atribui o valor da transferência à coluna 'valor'.
     'valor': transferencia.valor,
     // Atribui o número da conta à coluna 'numero_conta'.
     'numero_conta': transferencia.numeroConta,
   };
+
   return db.insert('transferencias', transferenciaMap);
 }
 

@@ -6,7 +6,9 @@ class Editor extends StatelessWidget {
   final String? dica;
   final IconData? icone;
 
-  Editor({this.controlador, this.rotulo, this.dica, this.icone});
+  final TextInputType? tipoTeclado;
+
+  const Editor({this.controlador, this.rotulo, this.dica, this.icone, this.tipoTeclado, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class Editor extends StatelessWidget {
           labelText: rotulo,
           hintText: dica,
         ),
-        keyboardType: TextInputType.number,
+        keyboardType: tipoTeclado ?? TextInputType.text,
       ),
     );
   }

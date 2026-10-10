@@ -29,37 +29,48 @@ class ListaTransferenciaState extends State<ListaTransferencias> {
     return Scaffold(
       appBar: AppBar(title: Text(_tituloAppBar)),
       body: FutureBuilder<List<Transferencia>>(
-        future: buscarTransferencias(),
+        future: buscarTransferencias(), // busca no banco
         builder: (context, snapshot) {
-          // Verifica se o Future ainda está em execução
-          // ConnectionState.waiting indica que a operação assíncrona não terminou
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // Mostra um indicador de progresso centralizado enquanto os dados carregam
-            return Center(child: CircularProgressIndicator());
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return const Center(child: CircularProgressIndicator());
+            case ConnectionState.done:
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text('Erro ao carregar transferências.'),
+                );
+              }
+
+              final transferencias = snapshot.data ?? [];
+              if (transferencias.isEmpty) {
+                return const Center(
+                  child: Text('Nenhuma transferência encontrada.'),
+                );
+              }
+
+              final formatador = NumberFormat.simpleCurrency(locale: 'pt_BR');
+
+              return ListView.builder(
+                itemCount: transferencias.length,
+                itemBuilder: (context, index) {
+                  final transferencia = transferencias[index];
+                  return Card(
+                    margin: const EdgeInsets.all(8),
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.monetization_on,
+                        color: Colors.green,
+                      ),
+                      title: Text(formatador.format(transferencia.valor)),
+                      subtitle: Text('Conta: ${transferencia.numeroConta}'),
+                    ),
+                  );
+                },
+              );
+
+            default:
+              return const SizedBox.shrink();
           }
-
-          // Verifica se ocorreu algum erro durante a execução do Future
-          if (snapshot.hasError) {
-            // Mostra uma mensagem de erro centralizada
-            return Center(child: Text('Erro ao carregar transferências'));
-          }
-
-          // Verifica se não há dados ou se a lista retornada está vazia
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            // Mostra uma mensagem indicando que não há transferências
-            return Center(child: Text('Nenhuma transferência encontrada'));
-          }
-
-          final transferencias = snapshot.data!;
-
-          return ListView.builder(
-            itemCount: transferencias.length,
-            itemBuilder: (context, indice) {
-              final transferencia = transferencias[indice];
-               return ItemTransferencia(transferencia);
-            }
-
-          );
         },
       ),
 

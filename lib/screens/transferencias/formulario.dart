@@ -5,6 +5,11 @@ import '../../database/app_database.dart';
 
 
 class FormularioTransferencia extends StatefulWidget {
+
+  final int? numeroConta; // nova propriedade opcional
+  const FormularioTransferencia({super.key, this.numeroConta}); // construtor com parâmetro
+
+
   @override
   State<StatefulWidget> createState() {
     return FormularioTransferenciaState();
@@ -25,6 +30,15 @@ class FormularioTransferenciaState extends State<FormularioTransferencia> {
   static const _textoBotaoConfirmar = 'Confirmar';
 
   @override
+
+  void initState(){
+    super.initState();
+
+    if(widget.numeroConta != null){
+      _controladorCampoNumeroConta.text = widget.numeroConta.toString();
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -40,6 +54,7 @@ class FormularioTransferenciaState extends State<FormularioTransferencia> {
               controlador: _controladorCampoNumeroConta,
               rotulo: _rotuloCampoNumeroConta,
               dica: _dicaCampoNumeroConta,
+              tipoTeclado: TextInputType.number,
             ),
 
             Editor(
@@ -47,6 +62,7 @@ class FormularioTransferenciaState extends State<FormularioTransferencia> {
               rotulo: _rotuloCampoValor,
               dica: _dicaCampoValor,
               icone: Icons.monetization_on,
+              tipoTeclado: TextInputType.numberWithOptions(decimal:true),
             ),
 
             ElevatedButton(
