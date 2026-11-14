@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './contatos/lista_contatos.dart';
 import './transferencias/lista.dart';
+import 'testes/teste_api.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
@@ -19,40 +20,49 @@ class Dashboard extends StatelessWidget {
 
             children: <Widget>[
               Image.asset("images/bytebank_logo.png"),
-            
-            const SizedBox(height: 8.0),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _FeatureItem(
-                  nome: "Contatos",
-                  icone: Icons.people,
-                  onClick: (){
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ListaContatos()
-                      ),
-                    );
-                  },
-                ),
+              const SizedBox(height: 8.0),
 
-                _FeatureItem(
-                  nome: "Transferências",
-                  icone: Icons.monetization_on,
-                  onClick: (){
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ListaTransferencias(),
-                      ),
-                    );
-                  },
-                )
-              ],
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  _FeatureItem(
+                    nome: "Contatos",
+                    icone: Icons.people,
+                    onClick: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ListaContatos(),
+                        ),
+                      );
+                    },
+                  ),
 
-            ),
-
-              
+                  _FeatureItem(
+                    nome: "Transferências",
+                    icone: Icons.monetization_on,
+                    onClick: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ListaTransferencias(),
+                        ),
+                      );
+                    },
+                  ),
+                  _FeatureItem(
+                    nome: 'Teste API',
+                    icone: Icons.cloud,
+                    onClick: () {                      
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const TesteApi(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ],
           ),
         ),
